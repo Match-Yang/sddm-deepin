@@ -1,23 +1,11 @@
 import QtQuick 2.0
 import QtGraphicalEffects 1.0
 
-Rectangle {
+Item {
     signal needClose()
     signal needShutdown()
     signal needRestart()
     signal needSuspend()
-
-    Image {
-        id: powerBackground
-        anchors.fill: parent
-        source: "background.jpg"
-    }
-
-    FastBlur {
-        anchors.fill: powerBackground
-        source: powerBackground
-        radius: 20
-    }
 
     Row {
         spacing: 70

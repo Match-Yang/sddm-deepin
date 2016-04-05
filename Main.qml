@@ -1,6 +1,7 @@
 /***********************************************************************/
 
 import QtQuick 2.0
+import QtGraphicalEffects 1.0
 import SddmComponents 2.0
 
 
@@ -11,7 +12,8 @@ Rectangle {
     state: "stateLogin"
 
     readonly property int hMargin: 40
-    readonly property int vMargin: 40
+    readonly property int vMargin: 30
+    readonly property int m_powerButtonSize: 40
     readonly property color textColor: "#ffffff"
 
     TextConstants { id: textConstants }
@@ -23,6 +25,7 @@ Rectangle {
             PropertyChanges { target: powerFrame; opacity: 1}
             PropertyChanges { target: sessionFrame; opacity: 0}
             PropertyChanges { target: userFrame; opacity: 0}
+            PropertyChanges { target: bgBlur; radius: 20}
         },
         State {
             name: "stateSession"
@@ -30,6 +33,7 @@ Rectangle {
             PropertyChanges { target: powerFrame; opacity: 0}
             PropertyChanges { target: sessionFrame; opacity: 1}
             PropertyChanges { target: userFrame; opacity: 0}
+            PropertyChanges { target: bgBlur; radius: 20}
         },
         State {
             name: "stateUser"
@@ -37,6 +41,7 @@ Rectangle {
             PropertyChanges { target: powerFrame; opacity: 0}
             PropertyChanges { target: sessionFrame; opacity: 0}
             PropertyChanges { target: userFrame; opacity: 1}
+            PropertyChanges { target: bgBlur; radius: 20}
         },
         State {
             name: "stateLogin"
@@ -44,11 +49,13 @@ Rectangle {
             PropertyChanges { target: powerFrame; opacity: 0}
             PropertyChanges { target: sessionFrame; opacity: 0}
             PropertyChanges { target: userFrame; opacity: 0}
+            PropertyChanges { target: bgBlur; radius: 0}
         }
 
     ]
     transitions: Transition {
-        PropertyAnimation { duration: 500; properties: "opacity";  }
+        PropertyAnimation { duration: 300; properties: "opacity";  }
+        PropertyAnimation { duration: 300; properties: "radius";  }
     }
 
     Repeater {
@@ -65,52 +72,189 @@ Rectangle {
         }
     }
 
-    PowerFrame {
-        id: powerFrame
-        enabled: root.state == "statePower"
+    Item {
+        id: mainFrame
         property variant geometry: screenModel.geometry(screenModel.primary)
         x: geometry.x; y: geometry.y; width: geometry.width; height: geometry.height
-        opacity: 1
-        onNeedClose: root.state = "stateLogin"
-        onNeedShutdown: sddm.powerOff()
-        onNeedRestart: sddm.reboot()
-        onNeedSuspend: sddm.suspend()
-    }
 
-    SessionFrame {
-        id: sessionFrame
-        enabled: root.state == "stateSession"
-        property variant geometry: screenModel.geometry(screenModel.primary)
-        x: geometry.x; y: geometry.y; width: geometry.width; height: geometry.height
-        onSelected: {
-            console.log("Selected session:", index)
-            root.state = "stateLogin"
-            loginFrame.m_sessionIndex = index
+        Image {
+            id: mainFrameBackground
+            anchors.fill: parent
+            source: "background.jpg"
         }
-        onNeedClose: root.state = "stateLogin"
-    }
 
-    UserFrame {
-        id: userFrame
-        enabled: root.state == "stateUser"
-        property variant geometry: screenModel.geometry(screenModel.primary)
-        x: geometry.x; y: geometry.y; width: geometry.width; height: geometry.height
-        onSelected: {
-            console.log("Select user:", userName)
-            root.state = "stateLogin"
-            loginFrame.m_userName = userName
+        FastBlur {
+            id: bgBlur
+            anchors.fill: mainFrameBackground
+            source: mainFrameBackground
+            radius: 0
         }
-        onNeedClose: root.state = "stateLogin"
-    }
 
-    LoginFrame {
-        id: loginFrame
-        enabled: root.state == "stateLogin"
-        property variant geometry: screenModel.geometry(screenModel.primary)
-        x: geometry.x; y: geometry.y; width: geometry.width; height: geometry.height
-        color: "transparent"
-        opacity: 0
-        transformOrigin: Item.Top
-    }
+        Item {
+            id: centerArea
+            width: parent.width
+            height: parent.height / 3
+            anchors.centerIn: parent
 
+            PowerFrame {
+                id: powerFrame
+                anchors.fill: parent
+                enabled: root.state == "statePower"
+                onNeedClose: root.state = "stateLogin"
+                onNeedShutdown: sddm.powerOff()
+                onNeedRestart: sddm.reboot()
+                onNeedSuspend: sddm.suspend()
+            }
+
+            SessionFrame {
+                id: sessionFrame
+                anchors.fill: parent
+                enabled: root.state == "stateSession"
+                onSelected: {
+                    console.log("Selected session:", index)
+                    root.state = "stateLogin"
+                    loginFrame.sessionIndex = index
+                }
+                onNeedClose: root.state = "stateLogin"
+            }
+
+            UserFrame {
+                id: userFrame
+                anchors.fill: parent
+                enabled: root.state == "stateUser"
+                onSelected: {
+                    console.log("Select user:", userName)
+                    root.state = "stateLogin"
+                    loginFrame.userName = userName
+                }
+                onNeedClose: root.state = "stateLogin"
+            }
+
+            LoginFrame {
+                id: loginFrame
+                anchors.fill: parent
+                enabled: root.state == "stateLogin"
+                opacity: 0
+                transformOrigin: Item.Top
+            }
+        }
+
+        Item {
+            id: timeArea
+
+            anchors {
+                bottom: parent.bottom
+                left: parent.left
+            }
+            width: parent.width / 3
+            height: parent.height / 5
+
+            Text {
+                id: timeText
+                anchors {
+                    left: parent.left
+                    leftMargin: hMargin
+                    bottom: dateText.top
+                    bottomMargin: 5
+                }
+
+                font.pointSize: 50
+                color: textColor
+
+                function updateTime() {
+                    text = new Date().toLocaleString(Qt.locale("en_US"), "hh:mm")
+                }
+            }
+
+            Text {
+                id: dateText
+                anchors {
+                    left: parent.left
+                    leftMargin: hMargin
+                    bottom: parent.bottom
+                    bottomMargin: vMargin
+                }
+
+                font.pointSize: 18
+                color: textColor
+
+                function updateDate() {
+                    text = new Date().toLocaleString(Qt.locale("en_US"), "yyyy-MM-dd dddd")
+                }
+            }
+
+            Timer {
+                interval: 1000
+                repeat: true
+                running: true
+                onTriggered: {
+                    timeText.updateTime()
+                    dateText.updateDate()
+                }
+            }
+
+            Component.onCompleted: {
+                timeText.updateTime()
+                dateText.updateDate()
+            }
+        }
+
+        Item {
+            id: powerArea
+            anchors {
+                bottom: parent.bottom
+                right: parent.right
+            }
+            width: parent.width / 3
+            height: parent.height / 5
+
+            Row {
+                spacing: 20
+                anchors.right: parent.right
+                anchors.rightMargin: hMargin
+                anchors.verticalCenter: parent.verticalCenter
+
+                ImageButton {
+                    id: sessionButton
+                    width: m_powerButtonSize
+                    height: m_powerButtonSize
+                    visible: sessionFrame.isMultipleSessions()
+                    source: sessionFrame.getCurrentSessionIconPath()
+                    onClicked: root.state = "stateSession"
+                }
+
+                ImageButton {
+                    id: userButton
+                    width: m_powerButtonSize
+                    height: m_powerButtonSize
+                    visible: userFrame.isMultipleUsers()
+
+                    source: "icons/switchframe/userswitch_normal.png"
+                    onClicked: {
+                        console.log("Switch User...")
+                        root.state = "stateUser"
+                    }
+                }
+
+                ImageButton {
+                    id: shutdownButton
+                    width: m_powerButtonSize
+                    height: m_powerButtonSize
+                    visible: true//sddm.canPowerOff
+
+                    source: "icons/switchframe/powermenu.png"
+                    onClicked: {
+                        console.log("Show shutdown menu")
+                        root.state = "statePower"
+                    }
+                }
+            }
+        }
+
+        MouseArea {
+            z: -1
+            anchors.fill: parent
+            onClicked: root.state = "stateLogin"
+        }
+    }
 }

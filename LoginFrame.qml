@@ -1,11 +1,10 @@
 import QtQuick 2.0
 import SddmComponents 2.0
 
-Rectangle {
-    property int m_sessionIndex: sessionModel.lastIndex
-    property string m_userName: userModel.lastUser
+Item {
+    property int sessionIndex: sessionModel.lastIndex
+    property string userName: userModel.lastUser
 
-    readonly property int m_powerButtonSize: 40
 
     function getIconByName(name) {
         for (var i = 0; i < userModel.count; i ++) {
@@ -14,12 +13,6 @@ Rectangle {
             }
         }
         return ""
-    }
-
-    Image {
-        id: powerBackground
-        anchors.fill: parent
-        source: "background.jpg"
     }
 
     Item {
@@ -64,7 +57,7 @@ Rectangle {
                     horizontalCenter: parent.horizontalCenter
                 }
 
-                text: m_userName
+                text: userName
                 color: textColor
                 font.pointSize: 15
             }
@@ -98,7 +91,7 @@ Rectangle {
                     KeyNavigation.backtab: userButton; KeyNavigation.tab: shutdownButton
                     Keys.onPressed: {
                         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                            sddm.login(userNameText.text, passwdInput.text, m_sessionIndex)
+                            sddm.login(userNameText.text, passwdInput.text, sessionIndex)
                             event.accepted = true
                         }
                     }
@@ -113,124 +106,125 @@ Rectangle {
                     // Fixme, This is vary strange
                     source: "icons/login_normal.png"
                     onClicked: {
-                        sddm.login(userNameText.text, passwdInput.text, m_sessionIndex)
+                        sddm.login(userNameText.text, passwdInput.text, sessionIndex)
                     }
                 }
             }
         }
     }
 
-    Item {
-        id: timeArea
+//    Item {
+//        id: timeArea
 
-        anchors {
-            bottom: parent.bottom
-            left: parent.left
-        }
-        width: parent.width / 3
-        height: parent.height / 5
+//        anchors {
+//            bottom: parent.bottom
+//            left: parent.left
+//        }
+//        width: parent.width / 3
+//        height: parent.height / 5
 
-        Text {
-            id: timeText
-            anchors {
-                left: parent.left
-                leftMargin: hMargin
-                bottom: dateText.top
-                bottomMargin: 5
-            }
+//        Text {
+//            id: timeText
+//            anchors {
+//                left: parent.left
+//                leftMargin: hMargin
+//                bottom: dateText.top
+//                bottomMargin: 5
+//            }
 
-            font.pointSize: 50
-            color: textColor
+//            font.pointSize: 50
+//            color: textColor
 
-            function updateTime() {
-                text = new Date().toLocaleString(Qt.locale("en_US"), "hh:mm")
-            }
-        }
+//            function updateTime() {
+//                text = new Date().toLocaleString(Qt.locale("en_US"), "hh:mm")
+//            }
+//        }
 
-        Text {
-            id: dateText
-            anchors {
-                left: parent.left
-                leftMargin: hMargin
-                bottom: parent.bottom
-                bottomMargin: vMargin
-            }
+//        Text {
+//            id: dateText
+//            anchors {
+//                left: parent.left
+//                leftMargin: hMargin
+//                bottom: parent.bottom
+//                bottomMargin: vMargin
+//            }
 
-            font.pointSize: 18
-            color: textColor
+//            font.pointSize: 18
+//            color: textColor
 
-            function updateDate() {
-                text = new Date().toLocaleString(Qt.locale("en_US"), "yyyy-MM-dd dddd")
-            }
-        }
+//            function updateDate() {
+//                text = new Date().toLocaleString(Qt.locale("en_US"), "yyyy-MM-dd dddd")
+//            }
+//        }
 
-        Timer {
-            interval: 1000
-            repeat: true
-            running: true
-            onTriggered: {
-                timeText.updateTime()
-                dateText.updateDate()
-            }
-        }
+//        Timer {
+//            interval: 1000
+//            repeat: true
+//            running: true
+//            onTriggered: {
+//                timeText.updateTime()
+//                dateText.updateDate()
+//            }
+//        }
 
-        Component.onCompleted: {
-            timeText.updateTime()
-            dateText.updateDate()
-        }
-    }
+//        Component.onCompleted: {
+//            timeText.updateTime()
+//            dateText.updateDate()
+//        }
+//    }
 
-    Item {
-        id: powerArea
-        anchors {
-            bottom: parent.bottom
-            right: parent.right
-        }
-        width: parent.width / 3
-        height: parent.height / 5
+//    Item {
+//        id: powerArea
+//        anchors {
+//            bottom: parent.bottom
+//            right: parent.right
+//        }
+//        width: parent.width / 3
+//        height: parent.height / 5
 
-        readonly property int itemSpacing: 20;
+//        readonly property int itemSpacing: 20;
 
-        Row {
-            spacing: 20
-            anchors.right: parent.right
-            anchors.rightMargin: hMargin
-            anchors.verticalCenter: parent.verticalCenter
+//        Row {
+//            spacing: 20
+//            anchors.right: parent.right
+//            anchors.rightMargin: hMargin
+//            anchors.verticalCenter: parent.verticalCenter
 
-            ImageButton {
-                id: sessionButton
-                width: m_powerButtonSize
-                height: m_powerButtonSize
-                visible: sessionFrame.isMultipleSessions()
-                source: sessionFrame.getCurrentSessionIconPath()
-                onClicked: root.state = "stateSession"
-            }
+//            ImageButton {
+//                id: sessionButton
+//                width: m_powerButtonSize
+//                height: m_powerButtonSize
+//                visible: sessionFrame.isMultipleSessions()
+//                source: sessionFrame.getCurrentSessionIconPath()
+//                onClicked: root.state = "stateSession"
+//            }
 
-            ImageButton {
-                id: userButton
-                width: m_powerButtonSize
-                height: m_powerButtonSize
-                visible: userFrame.isMultipleUsers()
+//            ImageButton {
+//                id: userButton
+//                width: m_powerButtonSize
+//                height: m_powerButtonSize
+//                visible: userFrame.isMultipleUsers()
 
-                source: "icons/switchframe/userswitch_normal.png"
-                onClicked: {
-                    console.log("Switch User...")
-                    root.state = "stateUser"
-                }
-            }
+//                source: "icons/switchframe/userswitch_normal.png"
+//                onClicked: {
+//                    console.log("Switch User...")
+//                    root.state = "stateUser"
+//                }
+//            }
 
-            ImageButton {
-                id: shutdownButton
-                width: m_powerButtonSize
-                height: m_powerButtonSize
-                visible: true//sddm.canPowerOff
+//            ImageButton {
+//                id: shutdownButton
+//                width: m_powerButtonSize
+//                height: m_powerButtonSize
+//                visible: true//sddm.canPowerOff
 
-                source: "icons/switchframe/powermenu.png"
-                onClicked: {
-                    console.log("Show shutdown menu")
-                    root.state = "statePower"
-                }
-            }
-        }
-    }
+//                source: "icons/switchframe/powermenu.png"
+//                onClicked: {
+//                    console.log("Show shutdown menu")
+//                    root.state = "statePower"
+//                }
+//            }
+//        }
+//    }
+
 }

@@ -1,7 +1,7 @@
 import QtQuick 2.0
 import QtGraphicalEffects 1.0
 
-Rectangle {
+Item {
     id: frame
     signal selected(var userName)
     signal needClose()
@@ -16,18 +16,6 @@ Rectangle {
 
     function isMultipleUsers() {
         return usersList.count > 1
-    }
-
-    Image {
-        id: usersBackground
-        anchors.fill: parent
-        source: "background.jpg"
-    }
-
-    FastBlur {
-        anchors.fill: usersBackground
-        source: usersBackground
-        radius: 20
     }
 
     ListView {

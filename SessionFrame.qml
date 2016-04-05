@@ -1,7 +1,7 @@
 import QtQuick 2.0
 import QtGraphicalEffects 1.0
 
-Rectangle {
+Item {
     id: frame
     signal selected(var index)
     signal needClose()
@@ -25,18 +25,6 @@ Rectangle {
 
     function isMultipleSessions() {
         return sessionList.count > 1
-    }
-
-    Image {
-        id: sessionBackground
-        anchors.fill: parent
-        source: "background.jpg"
-    }
-
-    FastBlur {
-        anchors.fill: sessionBackground
-        source: sessionBackground
-        radius: 20
     }
 
     ListView {
