@@ -3,6 +3,7 @@ import SddmComponents 2.0
 
 Rectangle {
     property int m_sessionIndex: sessionModel.lastIndex
+    property string m_userName: userModel.lastUser
 
     readonly property int m_powerButtonSize: 40
 
@@ -48,13 +49,10 @@ Rectangle {
                 color: "#999999"
                 Image {
                     id: userIcon
-                    source: ""
+                    source: userFrame.currentIconPath()
                     anchors.centerIn: parent
                     width: parent.width
                     height: parent.height
-                    Component.onCompleted: {
-                        source = getIconByName(userNameText.text)
-                    }
                 }
             }
 
@@ -66,7 +64,7 @@ Rectangle {
                     horizontalCenter: parent.horizontalCenter
                 }
 
-                text: userModel.lastUser
+                text: m_userName
                 color: textColor
                 font.pointSize: 15
             }
@@ -212,11 +210,12 @@ Rectangle {
                 id: userButton
                 width: m_powerButtonSize
                 height: m_powerButtonSize
-                visible: true//userModel.count > 1
+                visible: userFrame.isMultipleUsers()
 
                 source: "icons/switchframe/userswitch_normal.png"
                 onClicked: {
                     console.log("Switch User...")
+                    root.state = "stateUser"
                 }
             }
 

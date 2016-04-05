@@ -22,18 +22,28 @@ Rectangle {
             PropertyChanges { target: loginFrame; opacity: 0}
             PropertyChanges { target: powerFrame; opacity: 1}
             PropertyChanges { target: sessionFrame; opacity: 0}
+            PropertyChanges { target: userFrame; opacity: 0}
         },
         State {
             name: "stateSession"
             PropertyChanges { target: loginFrame; opacity: 0}
             PropertyChanges { target: powerFrame; opacity: 0}
             PropertyChanges { target: sessionFrame; opacity: 1}
+            PropertyChanges { target: userFrame; opacity: 0}
+        },
+        State {
+            name: "stateUser"
+            PropertyChanges { target: loginFrame; opacity: 0}
+            PropertyChanges { target: powerFrame; opacity: 0}
+            PropertyChanges { target: sessionFrame; opacity: 0}
+            PropertyChanges { target: userFrame; opacity: 1}
         },
         State {
             name: "stateLogin"
             PropertyChanges { target: loginFrame; opacity: 1}
             PropertyChanges { target: powerFrame; opacity: 0}
             PropertyChanges { target: sessionFrame; opacity: 0}
+            PropertyChanges { target: userFrame; opacity: 0}
         }
 
     ]
@@ -73,9 +83,22 @@ Rectangle {
         property variant geometry: screenModel.geometry(screenModel.primary)
         x: geometry.x; y: geometry.y; width: geometry.width; height: geometry.height
         onSelected: {
-            console.log("Selected :", index)
+            console.log("Selected session:", index)
             root.state = "stateLogin"
             loginFrame.m_sessionIndex = index
+        }
+        onNeedClose: root.state = "stateLogin"
+    }
+
+    UserFrame {
+        id: userFrame
+        enabled: root.state == "stateUser"
+        property variant geometry: screenModel.geometry(screenModel.primary)
+        x: geometry.x; y: geometry.y; width: geometry.width; height: geometry.height
+        onSelected: {
+            console.log("Select user:", userName)
+            root.state = "stateLogin"
+            loginFrame.m_userName = userName
         }
         onNeedClose: root.state = "stateLogin"
     }
