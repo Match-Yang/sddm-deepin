@@ -2,6 +2,18 @@ import QtQuick 2.0
 import SddmComponents 2.0
 
 Rectangle {
+    property int m_sessionIndex: sessionModel.lastIndex
+
+    readonly property int m_powerButtonSize: 40
+
+    function getIconByName(name) {
+        for (var i = 0; i < userModel.count; i ++) {
+            if (userModel.get(i).name === name) {
+                return userModel.get(i).icon
+            }
+        }
+        return ""
+    }
 
     Image {
         id: powerBackground
@@ -88,7 +100,7 @@ Rectangle {
                     KeyNavigation.backtab: userButton; KeyNavigation.tab: shutdownButton
                     Keys.onPressed: {
                         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                            sddm.login(userNameText.text, passwdInput.text, 1/*session.index*/)
+                            sddm.login(userNameText.text, passwdInput.text, m_sessionIndex)
                             event.accepted = true
                         }
                     }
@@ -103,7 +115,7 @@ Rectangle {
                     // Fixme, This is vary strange
                     source: "icons/login_normal.png"
                     onClicked: {
-                        sddm.login(userNameText.text, passwdInput.text, 1/*session.index*/)
+                        sddm.login(userNameText.text, passwdInput.text, m_sessionIndex)
                     }
                 }
             }
@@ -181,34 +193,44 @@ Rectangle {
 
         readonly property int itemSpacing: 20;
 
-        ImageButton {
-            id: userButton
-            visible: userModel.count > 1
-            anchors {
-                right: shutdownButton.left
-                rightMargin: powerArea.itemSpacing
-                verticalCenter: parent.verticalCenter
+        Row {
+            spacing: 20
+            anchors.right: parent.right
+            anchors.rightMargin: hMargin
+            anchors.verticalCenter: parent.verticalCenter
+
+            ImageButton {
+                id: sessionButton
+                width: m_powerButtonSize
+                height: m_powerButtonSize
+                visible: sessionFrame.isMultipleSessions()
+                source: sessionFrame.getCurrentSessionIconPath()
+                onClicked: root.state = "stateSession"
             }
 
-            source: "icons/switchframe/userswitch_normal.png"
-            onClicked: {
-                console.log("Switch User...")
-            }
-        }
+            ImageButton {
+                id: userButton
+                width: m_powerButtonSize
+                height: m_powerButtonSize
+                visible: true//userModel.count > 1
 
-        ImageButton {
-            id: shutdownButton
-            visible: sddm.canPowerOff
-            anchors {
-                right: parent.right
-                rightMargin: hMargin + powerArea.itemSpacing
-                verticalCenter: parent.verticalCenter
+                source: "icons/switchframe/userswitch_normal.png"
+                onClicked: {
+                    console.log("Switch User...")
+                }
             }
 
-            source: "icons/switchframe/powermenu.png"
-            onClicked: {
-                console.log("Show shutdown menu")
-                root.state = "statePower"
+            ImageButton {
+                id: shutdownButton
+                width: m_powerButtonSize
+                height: m_powerButtonSize
+                visible: true//sddm.canPowerOff
+
+                source: "icons/switchframe/powermenu.png"
+                onClicked: {
+                    console.log("Show shutdown menu")
+                    root.state = "statePower"
+                }
             }
         }
     }

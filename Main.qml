@@ -16,30 +16,24 @@ Rectangle {
 
     TextConstants { id: textConstants }
 
-    function getIconByName(name) {
-        for (var i = 0; i < userModel.count; i ++) {
-            if (userModel.get(i).name === userNameText.text) {
-                return userModel.get(i).icon
-            }
-        }
-        return ""
-    }
-
     states: [
         State {
             name: "statePower"
             PropertyChanges { target: loginFrame; opacity: 0}
             PropertyChanges { target: powerFrame; opacity: 1}
+            PropertyChanges { target: sessionFrame; opacity: 0}
         },
         State {
             name: "stateSession"
-            PropertyChanges { target: loginFrame; opacity: 1}
+            PropertyChanges { target: loginFrame; opacity: 0}
             PropertyChanges { target: powerFrame; opacity: 0}
+            PropertyChanges { target: sessionFrame; opacity: 1}
         },
         State {
             name: "stateLogin"
             PropertyChanges { target: loginFrame; opacity: 1}
             PropertyChanges { target: powerFrame; opacity: 0}
+            PropertyChanges { target: sessionFrame; opacity: 0}
         }
 
     ]
@@ -63,6 +57,7 @@ Rectangle {
 
     PowerFrame {
         id: powerFrame
+        enabled: root.state == "statePower"
         property variant geometry: screenModel.geometry(screenModel.primary)
         x: geometry.x; y: geometry.y; width: geometry.width; height: geometry.height
         opacity: 1
@@ -72,8 +67,22 @@ Rectangle {
         onNeedSuspend: sddm.suspend()
     }
 
+    SessionFrame {
+        id: sessionFrame
+        enabled: root.state == "stateSession"
+        property variant geometry: screenModel.geometry(screenModel.primary)
+        x: geometry.x; y: geometry.y; width: geometry.width; height: geometry.height
+        onSelected: {
+            console.log("Selected :", index)
+            root.state = "stateLogin"
+            loginFrame.m_sessionIndex = index
+        }
+        onNeedClose: root.state = "stateLogin"
+    }
+
     LoginFrame {
         id: loginFrame
+        enabled: root.state == "stateLogin"
         property variant geometry: screenModel.geometry(screenModel.primary)
         x: geometry.x; y: geometry.y; width: geometry.width; height: geometry.height
         color: "transparent"
