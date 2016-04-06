@@ -1,21 +1,29 @@
 import QtQuick 2.0
+import QtGraphicalEffects 1.0
 import SddmComponents 2.0
 
 Item {
+    id: frame
     property int sessionIndex: sessionModel.lastIndex
     property string userName: userModel.lastUser
+    property bool isProcessing: glowAnimation.running
 
     function captureFocus() {
         passwdInput.focus = true
     }
 
-    function getIconByName(name) {
-        for (var i = 0; i < userModel.count; i ++) {
-            if (userModel.get(i).name === name) {
-                return userModel.get(i).icon
-            }
+    Connections {
+        target: sddm
+        onLoginSucceeded: {
+            glowAnimation.running = false
         }
-        return ""
+        onLoginFailed: {
+            passwdInput.echoMode = TextInput.Normal
+            passwdInput.text = textConstants.loginFailed
+            passwdInput.focus = false
+            passwdInput.color = "#e7b222"
+            glowAnimation.running = false
+        }
     }
 
     Item {
@@ -39,6 +47,23 @@ Item {
                 source: userFrame.currentIconPath()
             }
 
+            Glow {
+                id: avatarGlow
+                anchors.fill: userIconRec
+                radius: 0
+                samples: 17
+                color: "#99ffffff"
+                source: userIconRec
+
+                SequentialAnimation on radius {
+                    id: glowAnimation
+                    running: false
+                    loops: Animation.Infinite
+                    PropertyAnimation { to: 20 ; duration: 1000}
+                    PropertyAnimation { to: 0 ; duration: 1000}
+                }
+            }
+
             Text {
                 id: userNameText
                 anchors {
@@ -54,6 +79,7 @@ Item {
 
             Rectangle {
                 id: passwdInputRec
+                visible: ! isProcessing
                 anchors {
                     top: userNameText.bottom
                     topMargin: 10
@@ -77,14 +103,19 @@ Item {
                     selectionColor: "#a8d6ec"
                     echoMode: TextInput.Password
                     verticalAlignment: TextInput.AlignVCenter
-
-                    KeyNavigation.backtab: userButton; KeyNavigation.tab: shutdownButton
-                    Keys.onPressed: {
-                        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                            sddm.login(userNameText.text, passwdInput.text, sessionIndex)
-                            event.accepted = true
+                    onFocusChanged: {
+                        if (focus) {
+                            color = textColor
+                            echoMode = TextInput.Password
+                            text = ""
                         }
                     }
+                    onAccepted: {
+                        sddm.login(userNameText.text, passwdInput.text, sessionIndex)
+                        glowAnimation.running = true
+                    }
+
+                    KeyNavigation.backtab: userButton; KeyNavigation.tab: shutdownButton
                 }
                 ImageButton {
                     id: loginButton
@@ -97,124 +128,10 @@ Item {
                     source: "icons/login_normal.png"
                     onClicked: {
                         sddm.login(userNameText.text, passwdInput.text, sessionIndex)
+                        glowAnimation.running = true
                     }
                 }
             }
         }
     }
-
-//    Item {
-//        id: timeArea
-
-//        anchors {
-//            bottom: parent.bottom
-//            left: parent.left
-//        }
-//        width: parent.width / 3
-//        height: parent.height / 5
-
-//        Text {
-//            id: timeText
-//            anchors {
-//                left: parent.left
-//                leftMargin: hMargin
-//                bottom: dateText.top
-//                bottomMargin: 5
-//            }
-
-//            font.pointSize: 50
-//            color: textColor
-
-//            function updateTime() {
-//                text = new Date().toLocaleString(Qt.locale("en_US"), "hh:mm")
-//            }
-//        }
-
-//        Text {
-//            id: dateText
-//            anchors {
-//                left: parent.left
-//                leftMargin: hMargin
-//                bottom: parent.bottom
-//                bottomMargin: vMargin
-//            }
-
-//            font.pointSize: 18
-//            color: textColor
-
-//            function updateDate() {
-//                text = new Date().toLocaleString(Qt.locale("en_US"), "yyyy-MM-dd dddd")
-//            }
-//        }
-
-//        Timer {
-//            interval: 1000
-//            repeat: true
-//            running: true
-//            onTriggered: {
-//                timeText.updateTime()
-//                dateText.updateDate()
-//            }
-//        }
-
-//        Component.onCompleted: {
-//            timeText.updateTime()
-//            dateText.updateDate()
-//        }
-//    }
-
-//    Item {
-//        id: powerArea
-//        anchors {
-//            bottom: parent.bottom
-//            right: parent.right
-//        }
-//        width: parent.width / 3
-//        height: parent.height / 5
-
-//        readonly property int itemSpacing: 20;
-
-//        Row {
-//            spacing: 20
-//            anchors.right: parent.right
-//            anchors.rightMargin: hMargin
-//            anchors.verticalCenter: parent.verticalCenter
-
-//            ImageButton {
-//                id: sessionButton
-//                width: m_powerButtonSize
-//                height: m_powerButtonSize
-//                visible: sessionFrame.isMultipleSessions()
-//                source: sessionFrame.getCurrentSessionIconPath()
-//                onClicked: root.state = "stateSession"
-//            }
-
-//            ImageButton {
-//                id: userButton
-//                width: m_powerButtonSize
-//                height: m_powerButtonSize
-//                visible: userFrame.isMultipleUsers()
-
-//                source: "icons/switchframe/userswitch_normal.png"
-//                onClicked: {
-//                    console.log("Switch User...")
-//                    root.state = "stateUser"
-//                }
-//            }
-
-//            ImageButton {
-//                id: shutdownButton
-//                width: m_powerButtonSize
-//                height: m_powerButtonSize
-//                visible: true//sddm.canPowerOff
-
-//                source: "icons/switchframe/powermenu.png"
-//                onClicked: {
-//                    console.log("Show shutdown menu")
-//                    root.state = "statePower"
-//                }
-//            }
-//        }
-//    }
-
 }

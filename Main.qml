@@ -142,7 +142,7 @@ Rectangle {
 
         Item {
             id: timeArea
-
+            visible: ! loginFrame.isProcessing
             anchors {
                 bottom: parent.bottom
                 left: parent.left
@@ -202,6 +202,7 @@ Rectangle {
 
         Item {
             id: powerArea
+            visible: ! loginFrame.isProcessing
             anchors {
                 bottom: parent.bottom
                 right: parent.right
