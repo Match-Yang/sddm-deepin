@@ -54,8 +54,8 @@ Rectangle {
 
     ]
     transitions: Transition {
-        PropertyAnimation { duration: 300; properties: "opacity";  }
-        PropertyAnimation { duration: 300; properties: "radius";  }
+//        PropertyAnimation { duration: 300; properties: "opacity";  }
+        PropertyAnimation { duration: 300; properties: "radius"; }
     }
 
     Repeater {
@@ -94,7 +94,8 @@ Rectangle {
             id: centerArea
             width: parent.width
             height: parent.height / 3
-            anchors.centerIn: parent
+            anchors.top: parent.top
+            anchors.topMargin: parent.height / 6
 
             PowerFrame {
                 id: powerFrame
@@ -206,7 +207,7 @@ Rectangle {
                 right: parent.right
             }
             width: parent.width / 3
-            height: parent.height / 5
+            height: parent.height / 7
 
             Row {
                 spacing: 20
@@ -257,4 +258,6 @@ Rectangle {
             onClicked: root.state = "stateLogin"
         }
     }
+
+    Component.onCompleted: loginFrame.captureFocus()
 }

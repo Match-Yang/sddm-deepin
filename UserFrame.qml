@@ -30,13 +30,15 @@ Item {
             property string userName: nameText.text
 
             width: 150
-            height: 120
+            height: 150
 
-            ImageButton {
+            UserAvatar {
                 id: iconButton
                 anchors.top: parent.top
                 anchors.horizontalCenter: parent.horizontalCenter
-                normalImg: icon
+                width: 100
+                height: 100
+                source: icon
                 onClicked: {
                     selected(name)
                     usersList.currentIndex = index

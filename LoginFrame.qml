@@ -5,6 +5,9 @@ Item {
     property int sessionIndex: sessionModel.lastIndex
     property string userName: userModel.lastUser
 
+    function captureFocus() {
+        passwdInput.focus = true
+    }
 
     function getIconByName(name) {
         for (var i = 0; i < userModel.count; i ++) {
@@ -25,28 +28,15 @@ Item {
             id: loginItem
             anchors.fill: parent
 
-            Rectangle {
+            UserAvatar {
                 id: userIconRec
                 anchors {
                     top: parent.top
                     horizontalCenter: parent.horizontalCenter
                 }
-
-                width: radius
-                height: radius
-                radius: 130
-                border {
-                    width: 3
-                    color: "#ffffff"
-                }
-                color: "#999999"
-                Image {
-                    id: userIcon
-                    source: userFrame.currentIconPath()
-                    anchors.centerIn: parent
-                    width: parent.width
-                    height: parent.height
-                }
+                width: 130
+                height: 130
+                source: userFrame.currentIconPath()
             }
 
             Text {
