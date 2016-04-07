@@ -15,7 +15,7 @@ Item {
     Connections {
         target: sddm
         onLoginSucceeded: {
-            glowAnimation.running = false
+//            glowAnimation.running = false
         }
         onLoginFailed: {
             passwdInput.echoMode = TextInput.Normal
@@ -58,6 +58,7 @@ Item {
                 SequentialAnimation on radius {
                     id: glowAnimation
                     running: false
+                    alwaysRunToEnd: true
                     loops: Animation.Infinite
                     PropertyAnimation { to: 20 ; duration: 1000}
                     PropertyAnimation { to: 0 ; duration: 1000}
@@ -111,8 +112,8 @@ Item {
                         }
                     }
                     onAccepted: {
-                        sddm.login(userNameText.text, passwdInput.text, sessionIndex)
                         glowAnimation.running = true
+                        sddm.login(userNameText.text, passwdInput.text, sessionIndex)
                     }
 
                     KeyNavigation.backtab: userButton; KeyNavigation.tab: shutdownButton
@@ -127,8 +128,8 @@ Item {
                     // Fixme, This is vary strange
                     source: "icons/login_normal.png"
                     onClicked: {
-                        sddm.login(userNameText.text, passwdInput.text, sessionIndex)
                         glowAnimation.running = true
+                        sddm.login(userNameText.text, passwdInput.text, sessionIndex)
                     }
                 }
             }
