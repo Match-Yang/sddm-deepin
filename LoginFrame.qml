@@ -44,7 +44,8 @@ Item {
                 }
                 width: 130
                 height: 130
-                source: userFrame.currentIconPath()
+                source: userFrame.currentIconPath
+                onSourceChanged: requestPaint()
             }
 
             Glow {

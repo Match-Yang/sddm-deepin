@@ -6,13 +6,8 @@ Item {
     signal selected(var userName)
     signal needClose()
 
-    function currentIconPath() {
-        return usersList.currentItem.iconPath
-    }
-
-    function currentUserName() {
-        return usersList.currentItem.userName
-    }
+    property string currentIconPath: usersList.currentItem.iconPath
+    property string currentUserName: usersList.currentItem.userName
 
     function isMultipleUsers() {
         return usersList.count > 1
@@ -42,6 +37,8 @@ Item {
                 onClicked: {
                     selected(name)
                     usersList.currentIndex = index
+                    currentIconPath = icon
+                    currentUserName = name
                     selected(name)
                 }
             }
@@ -56,6 +53,14 @@ Item {
                 font.pointSize: 15
                 color: "white"
                 wrapMode: Text.WordWrap
+            }
+
+            Component.onCompleted: {
+                if (name === userModel.lastUser) {
+                    usersList.currentIndex = index
+                    currentIconPath = icon
+                    currentUserName = name
+                }
             }
         }
     }
