@@ -25,7 +25,7 @@ Rectangle {
             PropertyChanges { target: powerFrame; opacity: 1}
             PropertyChanges { target: sessionFrame; opacity: 0}
             PropertyChanges { target: userFrame; opacity: 0}
-            PropertyChanges { target: bgBlur; radius: 20}
+            PropertyChanges { target: bgBlur; radius: 30}
         },
         State {
             name: "stateSession"
@@ -33,7 +33,7 @@ Rectangle {
             PropertyChanges { target: powerFrame; opacity: 0}
             PropertyChanges { target: sessionFrame; opacity: 1}
             PropertyChanges { target: userFrame; opacity: 0}
-            PropertyChanges { target: bgBlur; radius: 20}
+            PropertyChanges { target: bgBlur; radius: 30}
         },
         State {
             name: "stateUser"
@@ -41,7 +41,7 @@ Rectangle {
             PropertyChanges { target: powerFrame; opacity: 0}
             PropertyChanges { target: sessionFrame; opacity: 0}
             PropertyChanges { target: userFrame; opacity: 1}
-            PropertyChanges { target: bgBlur; radius: 20}
+            PropertyChanges { target: bgBlur; radius: 30}
         },
         State {
             name: "stateLogin"
@@ -54,7 +54,7 @@ Rectangle {
 
     ]
     transitions: Transition {
-//        PropertyAnimation { duration: 300; properties: "opacity";  }
+        PropertyAnimation { duration: 100; properties: "opacity";  }
         PropertyAnimation { duration: 300; properties: "radius"; }
     }
 
@@ -65,7 +65,7 @@ Rectangle {
             source: config.background
             fillMode: Image.Tile
             onStatusChanged: {
-                if (status == Image.Error && source != config.defaultBackground) {
+                if (status == Image.Error && source !== config.defaultBackground) {
                     source = config.defaultBackground
                 }
             }
@@ -95,7 +95,7 @@ Rectangle {
             width: parent.width
             height: parent.height / 3
             anchors.top: parent.top
-            anchors.topMargin: parent.height / 6
+            anchors.topMargin: parent.height / 5
 
             PowerFrame {
                 id: powerFrame
@@ -221,7 +221,7 @@ Rectangle {
                     width: m_powerButtonSize
                     height: m_powerButtonSize
                     visible: sessionFrame.isMultipleSessions()
-                    source: sessionFrame.getCurrentSessionIconPath()
+                    source: sessionFrame.getCurrentSessionIconIndicator()
                     onClicked: root.state = "stateSession"
                 }
 

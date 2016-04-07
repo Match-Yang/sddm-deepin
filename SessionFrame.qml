@@ -19,8 +19,8 @@ Item {
         return "unknow"
     }
 
-    function getCurrentSessionIconPath() {
-        return sessionList.currentItem.iconPath
+    function getCurrentSessionIconIndicator() {
+        return sessionList.currentItem.iconIndicator;
     }
 
     function isMultipleSessions() {
@@ -36,19 +36,24 @@ Item {
         currentIndex: sessionModel.lastIndex
         orientation: ListView.Horizontal
         delegate: Item {
-            property string iconPath: iconButton.normalImg
+            property string iconIndicator: iconButton.indicator
 
-            width: 150
-            height: 120
+            width: 250
+            height: 150
 
             ImageButton {
                 id: iconButton
                 anchors.top: parent.top
                 anchors.horizontalCenter: parent.horizontalCenter
-                property var prefix: ("icons/%1_indicator_").arg(getIconName(name));
+                width: 100
+                height: 100
                 normalImg: ("%1normal.png").arg(prefix)
                 hoverImg: ("%1hover.png").arg(prefix)
                 pressImg: ("%1press.png").arg(prefix)
+
+                property var prefix: ("icons/sessionicon/%1_").arg(getIconName(name));
+                property var indicator: ("icons/%1_indicator_normal.png").arg(getIconName(name));
+
                 onClicked: {
                     selected(index)
                     sessionList.currentIndex = index

@@ -10,7 +10,8 @@ Item {
     Row {
         spacing: 70
 
-        anchors.centerIn: parent
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
 
         Item {
             width: 100
