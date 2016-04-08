@@ -216,35 +216,37 @@ Rectangle {
                 anchors.rightMargin: hMargin
                 anchors.verticalCenter: parent.verticalCenter
 
-                ImageButton {
+                ImgButton {
                     id: sessionButton
                     width: m_powerButtonSize
                     height: m_powerButtonSize
                     visible: sessionFrame.isMultipleSessions()
-                    source: sessionFrame.getCurrentSessionIconIndicator()
+                    normalImg: sessionFrame.getCurrentSessionIconIndicator()
                     onClicked: root.state = "stateSession"
                 }
 
-                ImageButton {
+                ImgButton {
                     id: userButton
                     width: m_powerButtonSize
                     height: m_powerButtonSize
                     visible: userFrame.isMultipleUsers()
 
-                    source: "icons/switchframe/userswitch_normal.png"
+                    normalImg: "icons/switchframe/userswitch_normal.png"
+                    hoverImg: "icons/switchframe/userswitch_hover.png"
+                    pressImg: "icons/switchframe/userswitch_press.png"
                     onClicked: {
                         console.log("Switch User...")
                         root.state = "stateUser"
                     }
                 }
 
-                ImageButton {
+                ImgButton {
                     id: shutdownButton
                     width: m_powerButtonSize
                     height: m_powerButtonSize
                     visible: true//sddm.canPowerOff
 
-                    source: "icons/switchframe/powermenu.png"
+                    normalImg: "icons/switchframe/powermenu.png"
                     onClicked: {
                         console.log("Show shutdown menu")
                         root.state = "statePower"

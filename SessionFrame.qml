@@ -6,6 +6,8 @@ Item {
     signal selected(var index)
     signal needClose()
 
+    readonly property int m_viewMaxWidth: frame.width - prevSession.width - nextSession.width - 230;
+    property bool shouldShowBG: false
     property var sessionTypeList: ["deepin", "enlightenment", "fluxbox", "gnome", "kde", "lxde", "ubuntu"]
     function getIconName(sessionName) {
         for (var item in sessionTypeList) {
@@ -27,21 +29,47 @@ Item {
         return sessionList.count > 1
     }
 
+    onOpacityChanged: {
+        shouldShowBG = false
+    }
+
+    ImgButton {
+        id: prevSession
+        visible: sessionList.childrenRect.width > m_viewMaxWidth
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.margins: 10
+        normalImg: "icons/angle-left.png"
+        onClicked: {
+            sessionList.decrementCurrentIndex()
+            shouldShowBG = true
+        }
+//        KeyNavigation.backtab: btnShutdown; KeyNavigation.tab: listView
+    }
+
     ListView {
         id: sessionList
         anchors.centerIn: parent
-        width: childrenRect.width
-        height: 80
+        width:  childrenRect.width > m_viewMaxWidth ? m_viewMaxWidth : childrenRect.width
+        height: 150
+        clip: true
         model: sessionModel
         currentIndex: sessionModel.lastIndex
         orientation: ListView.Horizontal
-        delegate: Item {
+        spacing: 10
+        delegate: Rectangle {
             property string iconIndicator: iconButton.indicator
+            property bool activeBG: sessionList.currentIndex === index && shouldShowBG
 
-            width: 250
+            border.width: 3
+            border.color: activeBG ? "#33ffffff" : "transparent"
+            radius: 8
+            color: activeBG ? "#55000000" : "transparent"
+
+            width: 230
             height: 150
 
-            ImageButton {
+            ImgButton {
                 id: iconButton
                 anchors.top: parent.top
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -71,6 +99,20 @@ Item {
                 wrapMode: Text.WordWrap
             }
         }
+    }
+
+    ImgButton {
+        id: nextSession
+        visible: sessionList.childrenRect.width > m_viewMaxWidth
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.margins: 10
+        normalImg: "icons/angle-right.png"
+        onClicked: {
+            sessionList.incrementCurrentIndex()
+            shouldShowBG = true
+        }
+//        KeyNavigation.backtab: listView; KeyNavigation.tab: session
     }
 
     MouseArea {

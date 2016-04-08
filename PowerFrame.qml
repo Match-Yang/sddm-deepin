@@ -17,7 +17,7 @@ Item {
             width: 100
             height: 150
 
-            ImageButton {
+            ImgButton {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
                 normalImg: "icons/powerframe/shutdown_normal.png"
@@ -41,7 +41,7 @@ Item {
             width: 100
             height: 150
 
-            ImageButton {
+            ImgButton {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
                 normalImg: "icons/powerframe/restart_normal.png"
@@ -65,7 +65,7 @@ Item {
             width: 100
             height: 150
 
-            ImageButton {
+            ImgButton {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
                 normalImg: "icons/powerframe/suspend_normal.png"
