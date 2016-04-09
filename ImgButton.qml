@@ -9,6 +9,8 @@ Image {
 
     signal clicked()
 
+    onNormalImgChanged: button.source = normalImg
+
     MouseArea {
         anchors.fill: parent
         hoverEnabled: true

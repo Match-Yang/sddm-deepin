@@ -30,10 +30,12 @@ Item {
         id: centerArea
         anchors.centerIn: parent
         width: parent.width
-        height: parent.height / 3
+        height: parent.height / 4 * 3
 
         Item {
             id: loginItem
+            width: parent.width
+            height: parent.height
             anchors.fill: parent
 
             UserAvatar {
@@ -45,7 +47,6 @@ Item {
                 width: 130
                 height: 130
                 source: userFrame.currentIconPath
-                onSourceChanged: requestPaint()
             }
 
             Glow {

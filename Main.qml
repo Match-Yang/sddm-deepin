@@ -261,6 +261,4 @@ Rectangle {
             onClicked: root.state = "stateLogin"
         }
     }
-
-    Component.onCompleted: loginFrame.captureFocus()
 }
