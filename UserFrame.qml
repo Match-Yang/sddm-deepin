@@ -10,6 +10,7 @@ Item {
     property string currentIconPath: usersList.currentItem.iconPath
     property string currentUserName: usersList.currentItem.userName
     property bool shouldShowBG: false
+    property alias currentItem: usersList.currentItem
 
     function isMultipleUsers() {
         return usersList.count > 1
@@ -17,6 +18,13 @@ Item {
 
     onOpacityChanged: {
         shouldShowBG = false
+    }
+
+    onFocusChanged: {
+        // Active by mouse click
+        if (focus) {
+            usersList.currentItem.focus = false
+        }
     }
 
     ImgButton {
@@ -30,7 +38,6 @@ Item {
             usersList.decrementCurrentIndex()
             shouldShowBG = true
         }
-//        KeyNavigation.backtab: btnShutdown; KeyNavigation.tab: listView
     }
 
     ListView {
@@ -44,17 +51,25 @@ Item {
         orientation: ListView.Horizontal
 
         delegate: Rectangle {
+            id: item
             property string iconPath: icon
             property string userName: nameText.text
             property bool activeBG: usersList.currentIndex === index && shouldShowBG
 
             border.width: 3
-            border.color: activeBG ? "#33ffffff" : "transparent"
+            border.color: activeBG || focus ? "#33ffffff" : "transparent"
             radius: 8
-            color: activeBG ? "#55000000" : "transparent"
+            color: activeBG || focus? "#55000000" : "transparent"
 
             width: 130
             height: 150
+
+            function select() {
+                selected(name)
+                usersList.currentIndex = index
+                currentIconPath = icon
+                currentUserName = name
+            }
 
             UserAvatar {
                 id: iconButton
@@ -63,13 +78,7 @@ Item {
                 width: 100
                 height: 100
                 source: icon
-                onClicked: {
-                    selected(name)
-                    usersList.currentIndex = index
-                    currentIconPath = icon
-                    currentUserName = name
-                    selected(name)
-                }
+                onClicked: item.select()
             }
 
             Text {
@@ -84,11 +93,21 @@ Item {
                 wrapMode: Text.WordWrap
             }
 
+            Keys.onLeftPressed: {
+                usersList.decrementCurrentIndex()
+                usersList.currentItem.forceActiveFocus()
+            }
+            Keys.onRightPressed: {
+                usersList.incrementCurrentIndex()
+                usersList.currentItem.forceActiveFocus()
+            }
+            Keys.onEscapePressed: needClose()
+            Keys.onEnterPressed: item.select()
+            Keys.onReturnPressed: item.select()
+
             Component.onCompleted: {
                 if (name === userModel.lastUser) {
-                    usersList.currentIndex = index
-                    currentIconPath = icon
-                    currentUserName = name
+                    item.select()
                 }
             }
         }
@@ -105,7 +124,6 @@ Item {
             usersList.incrementCurrentIndex()
             shouldShowBG = true
         }
-//        KeyNavigation.backtab: listView; KeyNavigation.tab: session
     }
 
     MouseArea {
@@ -113,4 +131,6 @@ Item {
         anchors.fill: parent
         onClicked: needClose()
     }
+
+    Keys.onEscapePressed: needClose()
 }

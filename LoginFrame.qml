@@ -7,10 +7,8 @@ Item {
     property int sessionIndex: sessionModel.lastIndex
     property string userName: userModel.lastUser
     property bool isProcessing: glowAnimation.running
-
-    function captureFocus() {
-        passwdInput.focus = true
-    }
+    property alias input: passwdInput
+    property alias button: loginButton
 
     Connections {
         target: sddm
@@ -47,6 +45,10 @@ Item {
                 width: 130
                 height: 130
                 source: userFrame.currentIconPath
+                onClicked: {
+                    root.state = "stateUser"
+                    userFrame.focus = true
+                }
             }
 
             Glow {
@@ -117,11 +119,28 @@ Item {
                         glowAnimation.running = true
                         sddm.login(userNameText.text, passwdInput.text, sessionIndex)
                     }
-
-                    KeyNavigation.backtab: userButton; KeyNavigation.tab: shutdownButton
+                    KeyNavigation.backtab: {
+                        if (sessionButton.visible) {
+                            return sessionButton
+                        }
+                        else if (userButton.visible) {
+                            return userButton
+                        }
+                        else {
+                            return shutdownButton
+                        }
+                    }
+                    KeyNavigation.tab: loginButton
+                    Timer {
+                        interval: 200
+                        running: true
+                        onTriggered: passwdInput.forceActiveFocus()
+                    }
                 }
                 ImgButton {
                     id: loginButton
+                    height: passwdInput.height
+                    width: height
                     anchors {
                         right: parent.right
                         verticalCenter: parent.verticalCenter
@@ -134,6 +153,8 @@ Item {
                         glowAnimation.running = true
                         sddm.login(userNameText.text, passwdInput.text, sessionIndex)
                     }
+                    KeyNavigation.tab: shutdownButton
+                    KeyNavigation.backtab: passwdInput
                 }
             }
         }

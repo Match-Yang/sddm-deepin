@@ -7,6 +7,8 @@ Item {
     signal needRestart()
     signal needSuspend()
 
+    property alias shutdown: shutdownButton
+
     Row {
         spacing: 70
 
@@ -18,12 +20,18 @@ Item {
             height: 150
 
             ImgButton {
+                id: shutdownButton
+                width: 75
+                height: 75
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
                 normalImg: "icons/powerframe/shutdown_normal.png"
                 hoverImg: "icons/powerframe/shutdown_hover.png"
                 pressImg: "icons/powerframe/shutdown_press.png"
                 onClicked: needShutdown()
+                KeyNavigation.right: restartButton
+                KeyNavigation.left: suspendButton
+                Keys.onEscapePressed: needClose()
             }
 
             Text {
@@ -42,12 +50,18 @@ Item {
             height: 150
 
             ImgButton {
+                id: restartButton
+                width: 75
+                height: 75
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
                 normalImg: "icons/powerframe/restart_normal.png"
                 hoverImg: "icons/powerframe/restart_hover.png"
                 pressImg: "icons/powerframe/restart_press.png"
                 onClicked: needRestart()
+                KeyNavigation.right: suspendButton
+                KeyNavigation.left: shutdownButton
+                Keys.onEscapePressed: needClose()
             }
 
             Text {
@@ -66,12 +80,18 @@ Item {
             height: 150
 
             ImgButton {
+                id: suspendButton
+                width: 75
+                height: 75
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
                 normalImg: "icons/powerframe/suspend_normal.png"
                 hoverImg: "icons/powerframe/suspend_hover.png"
                 pressImg: "icons/powerframe/suspend_press.png"
                 onClicked: needSuspend()
+                KeyNavigation.right: shutdownButton
+                KeyNavigation.left: restartButton
+                Keys.onEscapePressed: needClose()
             }
 
             Text {
@@ -92,9 +112,5 @@ Item {
         onClicked: needClose()
     }
 
-    Keys.onPressed: {
-        if (event.key === Qt.Key_Escape) {
-            needClose()
-        }
-    }
+    Keys.onEscapePressed: needClose()
 }

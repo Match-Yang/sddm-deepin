@@ -101,7 +101,10 @@ Rectangle {
                 id: powerFrame
                 anchors.fill: parent
                 enabled: root.state == "statePower"
-                onNeedClose: root.state = "stateLogin"
+                onNeedClose: {
+                    root.state = "stateLogin"
+                    loginFrame.input.forceActiveFocus()
+                }
                 onNeedShutdown: sddm.powerOff()
                 onNeedRestart: sddm.reboot()
                 onNeedSuspend: sddm.suspend()
@@ -115,8 +118,12 @@ Rectangle {
                     console.log("Selected session:", index)
                     root.state = "stateLogin"
                     loginFrame.sessionIndex = index
+                    loginFrame.input.forceActiveFocus()
                 }
-                onNeedClose: root.state = "stateLogin"
+                onNeedClose: {
+                    root.state = "stateLogin"
+                    loginFrame.input.forceActiveFocus()
+                }
             }
 
             UserFrame {
@@ -127,8 +134,12 @@ Rectangle {
                     console.log("Select user:", userName)
                     root.state = "stateLogin"
                     loginFrame.userName = userName
+                    loginFrame.input.forceActiveFocus()
                 }
-                onNeedClose: root.state = "stateLogin"
+                onNeedClose: {
+                    root.state = "stateLogin"
+                    loginFrame.input.forceActiveFocus()
+                }
             }
 
             LoginFrame {
@@ -222,7 +233,21 @@ Rectangle {
                     height: m_powerButtonSize
                     visible: sessionFrame.isMultipleSessions()
                     normalImg: sessionFrame.getCurrentSessionIconIndicator()
-                    onClicked: root.state = "stateSession"
+                    onClicked: {
+                        root.state = "stateSession"
+                        sessionFrame.focus = true
+                    }
+                    onEnterPressed: sessionFrame.currentItem.forceActiveFocus()
+
+                    KeyNavigation.tab: loginFrame.input
+                    KeyNavigation.backtab: {
+                        if (userButton.visible) {
+                            return userButton
+                        }
+                        else {
+                            return shutdownButton
+                        }
+                    }
                 }
 
                 ImgButton {
@@ -237,6 +262,17 @@ Rectangle {
                     onClicked: {
                         console.log("Switch User...")
                         root.state = "stateUser"
+                        userFrame.focus = true
+                    }
+                    onEnterPressed: userFrame.currentItem.forceActiveFocus()
+                    KeyNavigation.backtab: shutdownButton
+                    KeyNavigation.tab: {
+                        if (sessionButton.visible) {
+                            return sessionButton
+                        }
+                        else {
+                            return loginFrame.input
+                        }
                     }
                 }
 
@@ -250,6 +286,20 @@ Rectangle {
                     onClicked: {
                         console.log("Show shutdown menu")
                         root.state = "statePower"
+                        powerFrame.focus = true
+                    }
+                    onEnterPressed: powerFrame.shutdown.focus = true
+                    KeyNavigation.backtab: loginFrame.button
+                    KeyNavigation.tab: {
+                        if (userButton.visible) {
+                            return userButton
+                        }
+                        else if (sessionButton.visible) {
+                            return sessionButton
+                        }
+                        else {
+                            return loginFrame.input
+                        }
                     }
                 }
             }
@@ -258,7 +308,10 @@ Rectangle {
         MouseArea {
             z: -1
             anchors.fill: parent
-            onClicked: root.state = "stateLogin"
+            onClicked: {
+                root.state = "stateLogin"
+                loginFrame.input.forceActiveFocus()
+            }
         }
     }
 }

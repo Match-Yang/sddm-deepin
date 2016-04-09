@@ -9,6 +9,8 @@ Item {
     readonly property int m_viewMaxWidth: frame.width - prevSession.width - nextSession.width - 230;
     property bool shouldShowBG: false
     property var sessionTypeList: ["deepin", "enlightenment", "fluxbox", "gnome", "kde", "lxde", "ubuntu"]
+    property alias currentItem: sessionList.currentItem
+
     function getIconName(sessionName) {
         for (var item in sessionTypeList) {
             var str = sessionTypeList[item]
@@ -33,6 +35,13 @@ Item {
         shouldShowBG = false
     }
 
+    onFocusChanged: {
+        // Active by mouse click
+        if (focus) {
+            sessionList.currentItem.focus = false
+        }
+    }
+
     ImgButton {
         id: prevSession
         visible: sessionList.childrenRect.width > m_viewMaxWidth
@@ -44,7 +53,6 @@ Item {
             sessionList.decrementCurrentIndex()
             shouldShowBG = true
         }
-//        KeyNavigation.backtab: btnShutdown; KeyNavigation.tab: listView
     }
 
     ListView {
@@ -62,9 +70,9 @@ Item {
             property bool activeBG: sessionList.currentIndex === index && shouldShowBG
 
             border.width: 3
-            border.color: activeBG ? "#33ffffff" : "transparent"
+            border.color: activeBG || focus ? "#33ffffff" : "transparent"
             radius: 8
-            color: activeBG ? "#55000000" : "transparent"
+            color: activeBG || focus ? "#55000000" : "transparent"
 
             width: 230
             height: 150
@@ -98,6 +106,24 @@ Item {
                 color: "white"
                 wrapMode: Text.WordWrap
             }
+
+            Keys.onLeftPressed: {
+                sessionList.decrementCurrentIndex()
+                sessionList.currentItem.forceActiveFocus()
+            }
+            Keys.onRightPressed: {
+                sessionList.incrementCurrentIndex()
+                sessionList.currentItem.forceActiveFocus()
+            }
+            Keys.onEscapePressed: needClose()
+            Keys.onEnterPressed: {
+                selected(index)
+                sessionList.currentIndex = index
+            }
+            Keys.onReturnPressed: {
+                selected(index)
+                sessionList.currentIndex = index
+            }
         }
     }
 
@@ -112,7 +138,6 @@ Item {
             sessionList.incrementCurrentIndex()
             shouldShowBG = true
         }
-//        KeyNavigation.backtab: listView; KeyNavigation.tab: session
     }
 
     MouseArea {
@@ -120,4 +145,6 @@ Item {
         anchors.fill: parent
         onClicked: needClose()
     }
+
+    Keys.onEscapePressed: needClose()
 }
