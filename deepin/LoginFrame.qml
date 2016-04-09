@@ -13,7 +13,7 @@ Item {
     Connections {
         target: sddm
         onLoginSucceeded: {
-//            glowAnimation.running = false
+            glowAnimation.running = false
         }
         onLoginFailed: {
             passwdInput.echoMode = TextInput.Normal
@@ -25,137 +25,131 @@ Item {
     }
 
     Item {
-        id: centerArea
+        id: loginItem
         anchors.centerIn: parent
         width: parent.width
-        height: parent.height / 4 * 3
+        height: parent.height
 
-        Item {
-            id: loginItem
-            width: parent.width
-            height: parent.height
-            anchors.fill: parent
+        UserAvatar {
+            id: userIconRec
+            anchors {
+                top: parent.top
+                topMargin: parent.height / 4
+                horizontalCenter: parent.horizontalCenter
+            }
+            width: 130
+            height: 130
+            source: userFrame.currentIconPath
+            onClicked: {
+                root.state = "stateUser"
+                userFrame.focus = true
+            }
+        }
 
-            UserAvatar {
-                id: userIconRec
-                anchors {
-                    top: parent.top
-                    horizontalCenter: parent.horizontalCenter
-                }
-                width: 130
-                height: 130
-                source: userFrame.currentIconPath
-                onClicked: {
-                    root.state = "stateUser"
-                    userFrame.focus = true
-                }
+        Glow {
+            id: avatarGlow
+            anchors.fill: userIconRec
+            radius: 0
+            samples: 17
+            color: "#99ffffff"
+            source: userIconRec
+
+            SequentialAnimation on radius {
+                id: glowAnimation
+                running: false
+                alwaysRunToEnd: true
+                loops: Animation.Infinite
+                PropertyAnimation { to: 20 ; duration: 1000}
+                PropertyAnimation { to: 0 ; duration: 1000}
+            }
+        }
+
+        Text {
+            id: userNameText
+            anchors {
+                top: userIconRec.bottom
+                topMargin: 10
+                horizontalCenter: parent.horizontalCenter
             }
 
-            Glow {
-                id: avatarGlow
-                anchors.fill: userIconRec
-                radius: 0
-                samples: 17
-                color: "#99ffffff"
-                source: userIconRec
+            text: userName
+            color: textColor
+            font.pointSize: 15
+        }
 
-                SequentialAnimation on radius {
-                    id: glowAnimation
-                    running: false
-                    alwaysRunToEnd: true
-                    loops: Animation.Infinite
-                    PropertyAnimation { to: 20 ; duration: 1000}
-                    PropertyAnimation { to: 0 ; duration: 1000}
-                }
+        Rectangle {
+            id: passwdInputRec
+            visible: ! isProcessing
+            anchors {
+                top: userNameText.bottom
+                topMargin: 10
+                horizontalCenter: parent.horizontalCenter
             }
+            width: 300
+            height: 35
+            radius: 3
+            color: "#55000000"
 
-            Text {
-                id: userNameText
-                anchors {
-                    top: userIconRec.bottom
-                    topMargin: 10
-                    horizontalCenter: parent.horizontalCenter
-                }
-
-                text: userName
+            TextInput {
+                id: passwdInput
+                anchors.fill: parent
+                anchors.leftMargin: 8
+                anchors.rightMargin: 8 + 36
+                clip: true
+                focus: true
                 color: textColor
                 font.pointSize: 15
+                selectByMouse: true
+                selectionColor: "#a8d6ec"
+                echoMode: TextInput.Password
+                verticalAlignment: TextInput.AlignVCenter
+                onFocusChanged: {
+                    if (focus) {
+                        color = textColor
+                        echoMode = TextInput.Password
+                        text = ""
+                    }
+                }
+                onAccepted: {
+                    glowAnimation.running = true
+                    sddm.login(userNameText.text, passwdInput.text, sessionIndex)
+                }
+                KeyNavigation.backtab: {
+                    if (sessionButton.visible) {
+                        return sessionButton
+                    }
+                    else if (userButton.visible) {
+                        return userButton
+                    }
+                    else {
+                        return shutdownButton
+                    }
+                }
+                KeyNavigation.tab: loginButton
+                Timer {
+                    interval: 200
+                    running: true
+                    onTriggered: passwdInput.forceActiveFocus()
+                }
             }
-
-            Rectangle {
-                id: passwdInputRec
-                visible: ! isProcessing
+            ImgButton {
+                id: loginButton
+                height: passwdInput.height
+                width: height
                 anchors {
-                    top: userNameText.bottom
-                    topMargin: 10
-                    horizontalCenter: parent.horizontalCenter
+                    right: parent.right
+                    verticalCenter: parent.verticalCenter
                 }
-                width: 300
-                height: 35
-                radius: 3
-                color: "#55000000"
 
-                TextInput {
-                    id: passwdInput
-                    anchors.fill: parent
-                    anchors.leftMargin: 8
-                    anchors.rightMargin: 8 + 36
-                    clip: true
-                    focus: true
-                    color: textColor
-                    font.pointSize: 15
-                    selectByMouse: true
-                    selectionColor: "#a8d6ec"
-                    echoMode: TextInput.Password
-                    verticalAlignment: TextInput.AlignVCenter
-                    onFocusChanged: {
-                        if (focus) {
-                            color = textColor
-                            echoMode = TextInput.Password
-                            text = ""
-                        }
-                    }
-                    onAccepted: {
-                        glowAnimation.running = true
-                        sddm.login(userNameText.text, passwdInput.text, sessionIndex)
-                    }
-                    KeyNavigation.backtab: {
-                        if (sessionButton.visible) {
-                            return sessionButton
-                        }
-                        else if (userButton.visible) {
-                            return userButton
-                        }
-                        else {
-                            return shutdownButton
-                        }
-                    }
-                    KeyNavigation.tab: loginButton
-                    Timer {
-                        interval: 200
-                        running: true
-                        onTriggered: passwdInput.forceActiveFocus()
-                    }
+                normalImg: "icons/login_normal.png"
+                hoverImg: "icons/login_normal.png"
+                pressImg: "icons/login_press.png"
+                onClicked: {
+                    glowAnimation.running = true
+                    sddm.login(userNameText.text, passwdInput.text, sessionIndex)
                 }
-                ImgButton {
-                    id: loginButton
-                    height: passwdInput.height
-                    width: height
-                    anchors {
-                        right: parent.right
-                        verticalCenter: parent.verticalCenter
-                    }
-
-                    normalImg: "icons/login_normal.png"
-                    hoverImg: "icons/login_normal.png"
-                    pressImg: "icons/login_press.png"
-                    onClicked: {
-                        glowAnimation.running = true
-                        sddm.login(userNameText.text, passwdInput.text, sessionIndex)
-                    }
-                    KeyNavigation.tab: shutdownButton
-                    KeyNavigation.backtab: passwdInput
-                }
+                KeyNavigation.tab: shutdownButton
+                KeyNavigation.backtab: passwdInput
             }
         }
     }
