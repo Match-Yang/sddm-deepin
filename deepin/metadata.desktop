@@ -1,6 +1,6 @@
 [SddmGreeterTheme]
-Name=SDDM Deepin
-Description=Deepin SDDM theme.
+Name=Deepin
+Description=Deepin-like SDDM theme.
 Screenshot=screenshot.png
 License=CC-BY-SA
 Type=sddm-theme
@@ -9,5 +9,5 @@ Screenshot=screenshot.png
 MainScript=Main.qml
 ConfigFile=theme.conf
 TranslationsDirectory=translations
-Theme-Id=sddm-deepin
+Theme-Id=deepin
 Theme-API=2.0
