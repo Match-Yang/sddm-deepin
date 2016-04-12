@@ -12,3 +12,8 @@ SDDM is a Login Manager for Linux which can be themed by qml. This theme use the
 2. `$cd sddm-deepin`
 
 3. `$./install.sh`
+
+## Note
+
+You should run the command below before install to test if all dependents was installed
+`sddm-greeter --test --theme deepin/`

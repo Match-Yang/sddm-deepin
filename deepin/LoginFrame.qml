@@ -14,6 +14,7 @@ Item {
         target: sddm
         onLoginSucceeded: {
             glowAnimation.running = false
+            Qt.quit()
         }
         onLoginFailed: {
             passwdInput.echoMode = TextInput.Normal
