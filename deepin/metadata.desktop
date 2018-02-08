@@ -1,7 +1,6 @@
 [SddmGreeterTheme]
 Name=Deepin
 Description=Deepin-like SDDM theme.
-Screenshot=screenshot.png
 License=CC-BY-SA
 Type=sddm-theme
 Version=1.0
